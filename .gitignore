@@ -1,6 +1,8 @@
 task.txt
 postgres_app/data.jsonl
 postgres_app/filling_script.py
+crud_server_app/urls_for_test.txt
+test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

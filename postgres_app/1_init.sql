@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS Events (
 CREATE TABLE IF NOT EXISTS Bets (
     id serial PRIMARY KEY,
     date_created int,
-    userId int REFERENCES users(id),
-    eventId int REFERENCES events(id)
+    userId int REFERENCES users(id) ON DELETE CASCADE,
+    eventId int REFERENCES events(id) ON DELETE CASCADE
 );
 
 
