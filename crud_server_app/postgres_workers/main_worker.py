@@ -1,9 +1,8 @@
 from psycopg.rows import dict_row
-
-from handlers.events_handlers import pool
+from psycopg_pool import ConnectionPool
 
 class MainDatabaseWorker:
-    def __init__(self, pool=pool):
+    def __init__(self, pool: ConnectionPool = None):
         self._pool = pool
 
     def _execute_query(self, query: str, values: tuple = None):
@@ -13,27 +12,24 @@ class MainDatabaseWorker:
             return conn.execute(query, values)
 
     def _create_record(self, query: str, values: tuple) -> dict:
-        print('00----', query, values)
         try:
             self._execute_query(query, values)
         except Exception:
             return {"Error": "Record not created"}
         return {"Success": "Record created"}
 
-    def _read_record(self, query: str) -> list:
+    def _read_record(self, query: str) -> list | dict:
         try:
             result = self._execute_query(query)
-        except Exception as e:
-            print("exx", e)
-            return [{"Error": "Wrong identificator"}]
+        except Exception:
+            return {"Error": "Wrong identificator"}
         else:
             return result.fetchall()
 
     def _update_record(self, query: str) -> dict:
         try:
             self._execute_query(query)
-        except Exception as e:
-            print("eexx", e)
+        except Exception:
             return {"Error": "Update failed"}
         else:
             return {"Success": "Record updated"}

@@ -4,14 +4,9 @@ from fastapi import FastAPI
 from routers import users_routers, bets_routers, events_routers
 from handlers.events_handlers import startup_event_handler, shutdown_event_handler
 
-app = FastAPI(title='FastApiCRUDServer',
+app = FastAPI(title='FastAPICRUDServer',
               description="Server for CRUD operations with postgres database",
               version="2.0")
-
-
-@app.get('/test')
-def test():
-    return {"status": "Here I am"}
 
 
 app.add_event_handler('startup', startup_event_handler(app))
