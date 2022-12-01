@@ -3,6 +3,9 @@ version: '3.1'
 services:
   crud_server:
     build: ./crud_server_app
+    restart: always
+    environment:
+      - DATABASE_LINK=host=database port=5432 dbname=pm_db connect_timeout=10 user=pm_user password=12131415
     ports:
       - 8765:8765
     depends_on:
@@ -10,8 +13,21 @@ services:
     volumes:
       - ./crud_server_app:/app
 
+  math_server:
+    build: ./math_server_app
+    restart: always
+    environment:
+      - CRUD_SERVER_LINK=http://crud_server:8765/get/all
+    ports:
+      - 8766:8766
+    depends_on:
+      - crud_server
+      - database
+    volumes:
+      - ./math_server_app:/app
+
   database:
-    image: postgres:latest
+    image: postgres:alpine3.17
     restart: always
     environment:
       POSTGRES_PASSWORD: 12131415
@@ -20,7 +36,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
 #    ports:
 #      - 5432:5432
-
     volumes:
             - ./postgres_app/:/docker-entrypoint-initdb.d/
 

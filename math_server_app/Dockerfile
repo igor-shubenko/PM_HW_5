@@ -2,8 +2,6 @@
 
 FROM python:3.10.8-slim
 
-RUN apt-get update && apt-get install libpq-dev -y
-
 RUN pip install --no-cache-dir --upgrade pip
 
 WORKDIR /app
@@ -13,12 +11,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN adduser --disabled-password crud_server_user
-USER crud_server_user
+RUN adduser --disabled-password math_server_user
+USER math_server_user
 
-EXPOSE 8765/tcp
+EXPOSE 8766/tcp
 
-ENV DATABASE_LINK=$DATABASE_LINK
+ENV CRUD_SERVER_LINK=$CRUD_SERVER_LINK
 
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "math_operations_server.py"]
 
