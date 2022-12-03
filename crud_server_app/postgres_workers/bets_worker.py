@@ -1,9 +1,9 @@
 from postgres_workers.query_maker import QueryMaker
-from psycopg_pool import ConnectionPool
+from psycopg_pool import AsyncConnectionPool
 
 
 class BetsDataWorker(QueryMaker):
-    def __init__(self, pool: ConnectionPool = None,
+    def __init__(self, pool: AsyncConnectionPool = None,
                  table_name='Bets',
                  cols_names=('date_created',
                              'userId',

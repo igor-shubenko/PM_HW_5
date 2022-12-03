@@ -1,42 +1,43 @@
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
+import asyncio
 
 class MainDatabaseWorker:
     def __init__(self, pool: ConnectionPool = None):
         self._pool = pool
 
-    def _execute_query(self, query: str, values: tuple = None):
+    async def _execute_query(self, query: str, values: tuple = None):
         """Executes queries to database, returns Cursor object"""
-        with self._pool.connection() as conn:
+        async with self._pool.connection() as conn:
             conn.row_factory = dict_row
-            return conn.execute(query, values)
+            return await conn.execute(query, values)
 
-    def _create_record(self, query: str, values: tuple) -> dict:
+    async def _create_record(self, query: str, values: tuple) -> dict:
         try:
-            self._execute_query(query, values)
+            await self._execute_query(query, values)
         except Exception:
             return {"Error": "Record not created"}
         return {"Success": "Record created"}
 
-    def _read_record(self, query: str) -> list | dict:
+    async def _read_record(self, query: str) -> list | dict:
         try:
-            result = self._execute_query(query)
+            result = await self._execute_query(query)
         except Exception:
             return {"Error": "Wrong identificator"}
         else:
-            return result.fetchall()
+            return await asyncio.create_task(result.fetchall())
 
-    def _update_record(self, query: str) -> dict:
+    async def _update_record(self, query: str) -> dict:
         try:
-            self._execute_query(query)
+            await self._execute_query(query)
         except Exception:
             return {"Error": "Update failed"}
         else:
             return {"Success": "Record updated"}
 
-    def _delete_record(self, query: str) -> dict:
+    async def _delete_record(self, query: str) -> dict:
         try:
-            self._execute_query(query)
+            await self._execute_query(query)
         except Exception:
             return {"Error": "Record not deleted"}
         return {"Success": "Record deleted"}

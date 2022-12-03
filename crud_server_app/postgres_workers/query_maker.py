@@ -11,13 +11,13 @@ class QueryMaker(MainDatabaseWorker):
         self._cols_names = ', '.join(cols_names)
         self._cols_amount = len(cols_names)
 
-    def create_record(self, data: dict) -> dict:
+    async def create_record(self, data: dict) -> dict:
         query = f"INSERT INTO {self._table_name}({self._cols_names}) VALUES" \
                 f"({', '.join(['%s']*self._cols_amount)});"
         values = tuple(data.values())
-        return self._create_record(query, values)
+        return await self._create_record(query, values)
 
-    def read_record(self, idn: str) -> list | dict:
+    async def read_record(self, idn: str) -> list | dict:
         if idn == 'all':
             query = f'SELECT * FROM {self._table_name} ORDER BY id;'
         elif idn.isdigit():
@@ -25,9 +25,9 @@ class QueryMaker(MainDatabaseWorker):
         else:
             return {"Error": "Wrong identificator"}
 
-        return self._read_record(query)
+        return await self._read_record(query)
 
-    def update_record(self, idn: int, data: dict) -> dict:
+    async def update_record(self, idn: int, data: dict) -> dict:
         data = {k: v for k, v in data.items() if v is not None}
         query_start = f"UPDATE {self._table_name} SET "
         temp_strings = []
@@ -40,9 +40,9 @@ class QueryMaker(MainDatabaseWorker):
             temp_strings.append(temp_string)
         query = query_start + ', '.join(temp_strings) + f' WHERE id={idn};'
 
-        return self._update_record(query)
+        return await self._update_record(query)
 
-    def delete_record(self, idn: str):
+    async def delete_record(self, idn: str):
         if idn == 'all':
             query = f'TRUNCATE {self._table_name} CASCADE;'
         elif idn.isdigit():
@@ -50,6 +50,6 @@ class QueryMaker(MainDatabaseWorker):
         else:
             return {"Error": "Wrong identificator"}
 
-        return self._delete_record(query)
+        return await self._delete_record(query)
 
 

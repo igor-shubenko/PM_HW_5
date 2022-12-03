@@ -1,26 +1,26 @@
 import os
 
 from fastapi import FastAPI
-from psycopg_pool import ConnectionPool
+from psycopg_pool import AsyncConnectionPool
 
 from postgres_workers.users_worker import UserDataWorker
 from postgres_workers.events_worker import EventsDataWorker
 from postgres_workers.bets_worker import BetsDataWorker
 
 connection_string = os.environ.get("DATABASE_LINK")
-pool = ConnectionPool(connection_string, open=False)
+pool = AsyncConnectionPool(connection_string, open=False)
 
 
 def startup_event_handler(app: FastAPI):
-    def wrapper():
+    async def wrapper():
         app.user_data_worker = UserDataWorker(pool=pool)
         app.event_data_worker = EventsDataWorker(pool=pool)
         app.bet_data_worker = BetsDataWorker(pool=pool)
-        pool.open()
+        await pool.open(wait=True)
     return wrapper
 
 
 def shutdown_event_handler(app: FastAPI):
-    def wrapper():
-        pool.close()
+    async def wrapper():
+        await pool.close()
     return wrapper

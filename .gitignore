@@ -5,6 +5,7 @@ postgres_app/user_data_processing.py
 postgres_app/processed_data.jsonl
 crud_server_app/urls_for_test.txt
 test.py
+math_server_app/urls_for_test.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
