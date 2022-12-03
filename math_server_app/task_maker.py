@@ -20,7 +20,7 @@ class TaskMaker:
     async def _execute(self, inst, *args):
         try:
             data = await self._client.get(self._url, timeout=100)
-        except Exception as e:
+        except Exception:
             return {"Error": "Something wrong"}
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(self._executor, inst, data.json(), *args)
