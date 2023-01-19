@@ -1,6 +1,6 @@
 from postgres_workers.main_worker import MainDatabaseWorker
 from psycopg_pool import ConnectionPool
-
+from fastapi import HTTPException
 
 class QueryMaker(MainDatabaseWorker):
     def __init__(self, pool: ConnectionPool = None,
@@ -23,7 +23,7 @@ class QueryMaker(MainDatabaseWorker):
         elif idn.isdigit():
             query = f'SELECT * FROM {self._table_name} WHERE id={idn};'
         else:
-            return {"Error": "Wrong identificator"}
+            raise HTTPException(status_code=400, detail={"Error": "Wrong identificator"})
 
         return await self._read_record(query)
 
@@ -48,7 +48,7 @@ class QueryMaker(MainDatabaseWorker):
         elif idn.isdigit():
             query = f'DELETE FROM {self._table_name} WHERE id={idn};'
         else:
-            return {"Error": "Wrong identificator"}
+            raise HTTPException(status_code=400, detail={"Error": "Wrong identificator"})
 
         return await self._delete_record(query)
 

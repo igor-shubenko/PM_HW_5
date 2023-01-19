@@ -1,6 +1,6 @@
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
-import asyncio
+from fastapi import HTTPException
 
 class MainDatabaseWorker:
     def __init__(self, pool: ConnectionPool = None):
@@ -16,22 +16,22 @@ class MainDatabaseWorker:
         try:
             await self._execute_query(query, values)
         except Exception:
-            return {"Error": "Record not created"}
+            raise HTTPException(status_code=500, detail="Record not created")
         return {"Success": "Record created"}
 
     async def _read_record(self, query: str) -> list | dict:
         try:
             result = await self._execute_query(query)
         except Exception:
-            return {"Error": "Wrong identificator"}
+            raise HTTPException(status_code=500, detail="Some Error")
         else:
-            return await asyncio.create_task(result.fetchall())
+            return await result.fetchall()
 
     async def _update_record(self, query: str) -> dict:
         try:
             await self._execute_query(query)
         except Exception:
-            return {"Error": "Update failed"}
+            raise HTTPException(status_code=500, detail="Update failed")
         else:
             return {"Success": "Record updated"}
 
@@ -39,5 +39,5 @@ class MainDatabaseWorker:
         try:
             await self._execute_query(query)
         except Exception:
-            return {"Error": "Record not deleted"}
+            raise HTTPException(status_code=500, detail="Error not deleted")
         return {"Success": "Record deleted"}
